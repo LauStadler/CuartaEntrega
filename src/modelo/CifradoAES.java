@@ -1,16 +1,15 @@
 package modelo;
 
 import java.util.Base64;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-public class Cifrado implements ICifrado{
+public class CifradoAES implements ICifrado{
 
   
     private final SecretKeySpec clave;
 
-    public Cifrado(String claveTexto) {
+    public CifradoAES(String claveTexto) {
         // Asegurarse de que la clave tenga 16 bytes (AES-128)
         byte[] claveBytes = claveTexto.getBytes();
         this.clave = new SecretKeySpec(claveBytes, 0, 16, "AES");
