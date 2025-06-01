@@ -20,6 +20,8 @@ public class Contacto {
         this.nickname = nickname;
         this.tieneChat = false;
     }  
+
+
     public String getNickname() {
         return nickname;
     }
@@ -34,6 +36,10 @@ public class Contacto {
 
     public ArrayList<String> getMensajes(){
         return this.mensajes;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
     
 }

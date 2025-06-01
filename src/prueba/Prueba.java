@@ -15,7 +15,8 @@ import vista.VistaLogIn;
 public class Prueba {
     // esta clase es un main para probar el funcionamiento de todo
     public static void main(String[] args){
-        Sistema sistema = new Sistema();
+        //Sistema sistema = new Sistema();
+        Sistema sistema = Sistema.getInstance();
         
         VistaLogIn vistaLogIn = new VistaLogIn();
         Vista vista = new Vista();

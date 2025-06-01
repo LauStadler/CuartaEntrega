@@ -9,7 +9,8 @@ public class CifradoAES implements ICifrado{
   
     private final SecretKeySpec clave;
 
-    public CifradoAES(String claveTexto) {
+    public CifradoAES() {
+        String claveTexto = getClave();
         // Asegurarse de que la clave tenga 16 bytes (AES-128)
         byte[] claveBytes = claveTexto.getBytes();
         this.clave = new SecretKeySpec(claveBytes, 0, 16, "AES");
@@ -29,5 +30,10 @@ public class CifradoAES implements ICifrado{
         cipher.init(Cipher.DECRYPT_MODE, clave);
         byte[] mensajeDescifrado = cipher.doFinal(Base64.getDecoder().decode(mensajeCifrado));
         return new String(mensajeDescifrado, "UTF-8");
+    }
+
+    public String getClave(){
+        return null;
+        
     }
 }

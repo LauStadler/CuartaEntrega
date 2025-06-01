@@ -22,6 +22,7 @@ public class GestorConexion extends Thread {
     private PrintWriter out;
     private Controlador controlador;
     private Sistema sistema;
+    private ICifrado cifrador;
     private String user;
     // esta clase se encarga de enviar mensajes
 
@@ -31,6 +32,7 @@ public class GestorConexion extends Thread {
         this.ipServer = "localhost";
         this.user = user;
         this.out = null;
+        this.cifrador = new CifradoAES();
     }
 
     public void run() {

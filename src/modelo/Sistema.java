@@ -31,11 +31,22 @@ public class Sistema {
     private String nickUsuario;
     private Controlador controlador;
     private GestorConexion gestionConexion;
+    private static Sistema instance = null;
 
     private DefaultListModel<Contacto> contactos = new DefaultListModel<Contacto>();
     private DefaultListModel<String> nicksContactos = new DefaultListModel<String>();
     private DefaultListModel<String> nicksChats = new DefaultListModel<String>();
 
+
+    private Sistema(){
+        super();
+    }
+
+    public static Sistema getInstance(){
+        if (this.instance == null)
+            this.instance = new Sistema();
+        return this.instance;
+    }
 
     public void setNickUsuario(String nickUsuario){
         this.nickUsuario = nickUsuario;
