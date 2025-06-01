@@ -12,7 +12,8 @@ public class GestionDeServer extends Thread {
     private Server server;
     private Socket mainServer;
     private PrintWriter out;
-    private ServerSocket socketServidores;
+    private BufferedReader in;
+    private ServerSocket socketServidores = null;
     private Socket serverSecundario;
 
     public GestionDeServer(Server server) {
@@ -35,6 +36,7 @@ public class GestionDeServer extends Thread {
                     mainServer = new Socket("localhost", 2001);
                 }
                 this.out = new PrintWriter(mainServer.getOutputStream(), true);
+                this.in = new BufferedReader(new InputStreamReader(mainServer.getInputStream()));
                 String update = "UPDATE";
                 this.out.println(update);
             } catch (Exception e) {
@@ -53,23 +55,23 @@ public class GestionDeServer extends Thread {
 				try {
                     if (server.isSoyPrincipal()){
                         // si nunca fui ppal, en el constructor nunca abri mi server socket. Tengo que abrirlo aca
-                        if (this.socketServidores == null)
+                        if (this.socketServidores == null){
                             this.socketServidores = new ServerSocket(server.getPuertoServidores());
+                        }
+
                         this.serverSecundario = socketServidores.accept();
                         System.out.println("Acepte una conexion de servidor secundario");
-                        
                         this.out = new PrintWriter(serverSecundario.getOutputStream(), true);
-                        
-                        BufferedReader in = new BufferedReader(new InputStreamReader(serverSecundario.getInputStream()));
+                        this.in = new BufferedReader(new InputStreamReader(serverSecundario.getInputStream()));
                         actualizacion = in.readLine();
                         if(actualizacion != null){
                             System.out.println("Recibi request de actualizacion");
                             update(); // seteo server secundario    
                         }
+                        
                     }
                     else{
                         System.out.println("Entre al else de no soy principal");
-                        BufferedReader in = new BufferedReader(new InputStreamReader(mainServer.getInputStream()));
                         actualizacion = in.readLine();
                         recibeActualizacion(actualizacion);
                     }				
@@ -179,7 +181,7 @@ public class GestionDeServer extends Thread {
                 e.printStackTrace();
             }
             System.out.println("Mensaje pendiente: " + aux);
-            envioActualizacion(12 + "#" + aux);
+            envioActualizacion(11 + "#" + aux);
         }
 
     }

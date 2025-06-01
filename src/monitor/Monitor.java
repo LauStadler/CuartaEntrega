@@ -40,19 +40,25 @@ public class Monitor extends Thread {
     public void setServerPrincipal(int server){
         this.serverPrincipal = server;
     }
-
+    
     @Override
     public void run() {
         while (true) {
             try {
                 String mensaje;
                 Socket socket = monitorSocket.accept();
-                if(noExistePrincipal())
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                String  line = in.readLine();
+                int serverId = Integer.parseInt(line.trim());
+                if(noExistePrincipal()){
                     mensaje = "PRINCIPAL";
+                    setServerPrincipal(serverId); // define quien es el principal, el primero que se conecta al monitor
+                    System.out.println("Puerto del principal "+this.serverPrincipal);
+                }
                 else
                     mensaje = "SECUNDARIO";
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                out.print(mensaje);
+                out.println(mensaje);
                 System.out.println("Le mande su rol");
                 new Thread(() -> handleConnection(socket)).start();
             } catch (IOException e) {
@@ -105,7 +111,7 @@ public class Monitor extends Thread {
                         serverPrincipal = server2;
                         
                         // mensaje para que el server 2 se setee como principal
-                        // crear conexion con serverSocket para monitor de server (3000 o 3001)
+                        // crear conexion con serverSocket para monitor de server (3001 o 3002)
                         try {
                             ServerSocket serverSocket = new ServerSocket(1001);
                             serverSocket.close();

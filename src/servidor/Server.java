@@ -35,15 +35,18 @@ public class Server extends Thread {
     public void run() {
 
         System.out.println("Inicie el Servidor");
-
         this.gestionDeServer = new GestionDeServer(this);
         gestionDeServer.start();
+
         try {
             while (true) {
-				System.out.println("Soy el server: "+ this.puertoClientes+ " y soy el principal?: "+this.soyPrincipal);
+                try {
+                    this.sleep(1);
+                } catch (InterruptedException ex) {
+                }
                 if (this.soyPrincipal) {
+                    System.out.println("Soy principal");
                     System.out.println("Volvi a entrar al if de principal yeiy");
-                    System.out.println("Soy principal voy a esperar conexiones");
                     Socket soc = socketClientes.accept();
                     System.out.println("Acepte una conexion");
                     BufferedReader in = new BufferedReader(new InputStreamReader(soc.getInputStream()));
@@ -228,10 +231,15 @@ public void startHeartbeat() {
 
         // Enviamos el número de servidor al conectar
         String nroServer = Integer.toString(getPuertoClientes());
-        out.println(nroServer);
+        out.println(nroServer); // aqui le manda el server que es, 1000 o 1001, el monitor debe leerlo para asignarle un
         System.out.println("Me conecte al monitor");
         // Leemos el rol que nos asigna el servidor (solo una vez)
+        System.out.println("Esperando rol del monitor...");
         String rol = in.readLine(); // puede ser "principal" o "secundario"
+        if (rol == null) {
+            System.out.println("Error al recibir el rol del monitor");
+            return;
+        }
         if (rol.equals("PRINCIPAL"))
             setSoyPrincipal(true);
         System.out.println("Mi rol es "+ rol);
@@ -289,7 +297,7 @@ public void startHeartbeat() {
     public void escuchaMonitor() {
         Thread hilo = new Thread(() -> {
             try {
-                socketMonitor = new ServerSocket(this.puertoEscMonitor);
+                this.socketMonitor = new ServerSocket(this.puertoEscMonitor);
                 System.out.println("Servidor escuchando al monitor en puerto " + puertoEscMonitor);
 
                 while (true) {
@@ -311,10 +319,7 @@ public void startHeartbeat() {
                 System.out.println("Error en escuchaMonitor: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
-
-        hilo.start();
+        }); hilo.start();
     }
-
    
 }

@@ -60,7 +60,7 @@ public class GestorConexion extends Thread {
                 out.println(this.user);
 
                 while (socket.isConnected()) {
-                    System.out.println("Ya me loguee estor en while socket is connected");
+                    System.out.println("Ya cree el socket estoy en while socket is connected");
                     String mensaje = in.readLine();
                     System.out.println("pase el readline");
                     procesaRequest(mensaje);
