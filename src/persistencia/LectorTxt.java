@@ -8,9 +8,9 @@ import javax.swing.DefaultListModel;
 
 import modelo.Contacto;
 
-public class LectorTxt {
+public class LectorTxt implements ILector{
     @Override
-    public DefaultListModel<Contacto> cargar(String nombreUsuario) throws IOException {
+    public DefaultListModel<Contacto> cargar (String nombreUsuario) throws IOException {
         String nombreArchivo = nombreUsuario + ".txt";
         DefaultListModel<Contacto> contactos = new DefaultListModel<Contacto>();
         BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo));

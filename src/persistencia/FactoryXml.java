@@ -1,6 +1,6 @@
 package persistencia;
 
-import java.swing.DefaultListModel;
+import javax.swing.DefaultListModel;
 
 public class FactoryXml implements IFactoryPersistencia {
     

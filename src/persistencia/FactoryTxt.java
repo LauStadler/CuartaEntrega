@@ -2,7 +2,7 @@ package persistencia;
 
 import javax.swing.DefaultListModel;
 
-public class FactoryTxt {
+public class FactoryTxt implements IFactoryPersistencia {
 
      @Override
     public GuardadorTxt creaGuardador(DefaultListModel contactos){

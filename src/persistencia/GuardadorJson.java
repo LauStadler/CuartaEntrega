@@ -14,16 +14,16 @@ import javax.swing.DefaultListModel;
 
 import modelo.Contacto;
 
-public class GuardadorJson {
+public class GuardadorJson implements IGuardador {
 
     private final Gson gson = new Gson();
 
-    @Override
-    public void guardar(DefaultListModel<Contacto> contactos, String nombreUsuario) throws IOException {
+   @Override
+    public void guardar(DefaultListModel<Contacto> contactos, String nombreUsuario) throws IOException{
         String nombreArchivo = nombreUsuario + ".json";
+
         try (Writer writer = new FileWriter(nombreArchivo)) {
             gson.toJson(contactos, writer);
         }
     }
-
 }

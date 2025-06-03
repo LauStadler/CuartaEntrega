@@ -43,9 +43,9 @@ public class Sistema {
     }
 
     public static Sistema getInstance(){
-        if (this.instance == null)
-            this.instance = new Sistema();
-        return this.instance;
+        if (instance == null)
+            instance = new Sistema();
+        return instance;
     }
 
     public void setNickUsuario(String nickUsuario){

@@ -16,15 +16,20 @@ public class GuardadorTxt implements IGuardador {
    
    
     @Override
-    public void guardar(DefaultListModel<Contacto> contactos, String nombreUsuario) throws IOException {
+    public void guardar(DefaultListModel<Contacto> contactos, String nombreUsuario) throws IOException{
         String nombreArchivo = nombreUsuario + ".txt";
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
-            for (Contacto c : contactos) {
-                writer.write("Contacto: " + c.getNickname() + "\n");
-                for (String mensaje : c.getMensajes()) {
-                    writer.write(mensaje + "\n");
+        try (FileWriter fileWriter = new FileWriter(nombreArchivo)){
+            try (BufferedWriter writer = new BufferedWriter(fileWriter)) {
+                for (int i = 0; i < contactos.size(); i++) {
+                    Contacto c = contactos.getElementAt(i);
+                    writer.write("Contacto: " + c.getNickname() + "\n");
+                    for (String mensaje : c.getMensajes()) {
+                        writer.write(mensaje + "\n");
+                    }
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
