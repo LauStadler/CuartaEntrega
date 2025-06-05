@@ -13,6 +13,7 @@ import modelo.GestorConexion;
 import modelo.Sistema;
 import vista.Vista;
 import vista.VistaLogIn;
+import vista.VistaPersistencia;
 
 /**()
  *
@@ -22,14 +23,15 @@ public class Controlador implements ActionListener{
 
     private Vista vista;
     private VistaLogIn vistaLogIn;
-    private Sistema sistema;
+    private VistaPersistencia vistaPersistencia;
     private GestorConexion gestionConexion;
     
     public Controlador(Vista vista, VistaLogIn vistaLogIn, Sistema sistema){
         this.vista = vista;
         this.vistaLogIn = vistaLogIn;
-        this.sistema = sistema;      
-        this.sistema.setControlador(this);
+        Sistema.getInstance().setControlador(this);
+        vistaPersistencia = new VistaPersistencia();
+        vistaPersistencia.setControlador(this);
 		
     }
 
@@ -44,14 +46,15 @@ public class Controlador implements ActionListener{
             System.out.print("Entre al action command de Login!!");
             String nickUsuario = vistaLogIn.getNickUsuario();
             int puertoUsuario = vistaLogIn.getPuertoUsuario();
-
+            
             if ((puertoUsuario == -1) || !puertoDisponible(puertoUsuario)){
                 vistaLogIn.muestraVentanaEmergente("El puerto es invalido o esta en uso");
             }else{
                 if (nickUsuario.equals("") || nickUsuario.equals(" nickname"))
                     vistaLogIn.muestraVentanaEmergente("Se debe ingresar un nombre de usuario");
                 else{
-                    sistema.ingresar(nickUsuario, puertoUsuario);
+                    Sistema.getInstance().ingresar(nickUsuario, puertoUsuario);
+                    Sistema.getInstance().leer();
                     // llenar campo nickUsuario
                     vista.setNickUsuario(nickUsuario);
                     // llenar campo puertoUsuario
@@ -70,19 +73,25 @@ public class Controlador implements ActionListener{
             String mensaje = vista.getTextoMensaje();
             String nicknameReceptor = vista.getNicknameChatSeleccionado();
             String nickUsuario = vista.getNicknameUsuario();
-            sistema.enviarMensaje(nickUsuario, nicknameReceptor, mensaje);
+            Sistema.getInstance().enviarMensaje(nickUsuario, nicknameReceptor, mensaje);
         }
         if (e.getActionCommand().equals("AgregarContacto")){
             System.out.print("Entre al action command de agregar contacto!!");
             //leer los campos de datos de contacto
             String nickname = vista.getNickContactoAgregado();
-            sistema.agregarContacto(nickname);
+            Sistema.getInstance().agregarContacto(nickname);
             
             //manda el request al servidor
             
         }
-    }
-    
+
+        if (e.getActionCommand().equals("Aceptar")){ // en ventana de persistencia
+            // getear el modo que eligio el usuario
+            String modo = vistaPersistencia.getModoSeleccionado();
+            // crear archivo de persistencia
+            Sistema.getInstance().creaArchConfigPersistencia(modo);
+        }       
+    }  
 
     public void cargaChat(Contacto contacto){
         vista.setTextoMensaje("");
@@ -91,7 +100,7 @@ public class Controlador implements ActionListener{
     }
 
     public String getNickName() {
-    	return sistema.getNickUsuario();
+    	return Sistema.getInstance().getNickUsuario();
     }
 
     // chequea si el puerto esta libre o no
@@ -108,13 +117,13 @@ public class Controlador implements ActionListener{
     public void listaContactosMouseClicked(java.awt.event.MouseEvent evt){
         vista.limpiaChat();
         String nickSeleccionado = vista.getListaContactosSeleccionado();
-        Contacto contacto = sistema.buscaContactoPorNick(nickSeleccionado);
+        Contacto contacto = Sistema.getInstance().buscaContactoPorNick(nickSeleccionado);
         vista.setNickChatSeleccionado(nickSeleccionado);
         if (contacto.getTieneChat()) {
             vista.cargaChat(contacto.getMensajes());
         } else {
             contacto.setTieneChat(true);
-            sistema.getNicksChats().addElement(nickSeleccionado);
+            Sistema.getInstance().getNicksChats().addElement(nickSeleccionado);
         }
         vista.cambiarAVentanaChat();
     }
@@ -123,22 +132,18 @@ public class Controlador implements ActionListener{
         vista.limpiaChat();
         String nickSeleccionado = vista.getListaChatsSeleccionado();
          if (nickSeleccionado.endsWith("[!!!]")) {
-            sistema.sacaNotificacion(nickSeleccionado);
+            Sistema.getInstance().sacaNotificacion(nickSeleccionado);
             // actualizar la vista para que se vea sin Â¨!!!n '> cambia automaticamente cuando cambia la l.ista de chats'
             System.out.println("El nick que elegi tiene una notificiacion. Cortando ... ");
             nickSeleccionado = nickSeleccionado.substring(0, nickSeleccionado.length() - 5);
             System.out.println("El nick cortado es: " + nickSeleccionado);
         }
-        Contacto contacto = sistema.buscaContactoPorNick(nickSeleccionado);
+        Contacto contacto = Sistema.getInstance().buscaContactoPorNick(nickSeleccionado);
         System.out.println("Seleccione el chat de "+ nickSeleccionado);
         System.out.println("Sus mensajes:  " + contacto.getMensajes());
         vista.setNickChatSeleccionado(nickSeleccionado);
        // vista.setPuertoChatSeleccionado(contacto.getPuerto());
         vista.cargaChat(contacto.getMensajes());
-    }
-
-    public Sistema getSistema(){
-        return this.sistema;
     }
 
     public void nuevoMensajeRecibido(String mensaje, Contacto contacto){
@@ -150,11 +155,19 @@ public class Controlador implements ActionListener{
             vista.cargaChat(contacto.getMensajes());
         }
         else{
-            sistema.poneNotificacion(contacto.getNickname());
+            Sistema.getInstance().poneNotificacion(contacto.getNickname());
         }
     }
 
     public Vista getVista() {
         return vista;
+    }
+
+    public void abreVentanaPersistencia(){
+        this.vistaPersistencia.setVisible(true);
+    }
+    
+    public VistaPersistencia getVistaPersistencia(){
+        return this.vistaPersistencia;
     }
 }

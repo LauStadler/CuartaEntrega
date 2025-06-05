@@ -26,6 +26,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Font;
+import modelo.Sistema;
 
 
 
@@ -573,8 +574,8 @@ public class Vista extends javax.swing.JFrame {
     public void setControlador(Controlador c){
 		this.bEnviar.addActionListener(c);
 		this.bAgregarContacto.addActionListener(c);
-        listaContactos.setModel(c.getSistema().getNicksContactos());
-        listaChats.setModel(c.getSistema().getNicksChats()); 
+        listaContactos.setModel(Sistema.getInstance().getNicksContactos());
+        listaChats.setModel(Sistema.getInstance().getNicksChats()); 
         
         listaContactos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt){
@@ -652,82 +653,5 @@ public class Vista extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, mensaje);
     }
 
-
-
-
-
-    
-    
-    /* 
-    public void setControlador (Controlador c){
-        nicknameUsuario.setText(c.getNickUsuario());
-        puertoUsuario.setText(String.valueOf(c.getUsuario().getPuerto()));
-        bEnviar.addActionListener(c);
-	textoMensaje.addActionListener(c);
-        
-        listaChats.setModel(c.getChats());
-        //DefaultListModel<String> modeloLista = new DefaultListModel<>();
-        //DefaultListModel<Chat> chats = c.getChats();
-
-        for (int i = 0; i < chats.getSize(); i++) {
-            modeloLista.addElement(chats.getElementAt(i).getContacto().getNickname());
-        }
-
-        listaChats.setModel(modeloLista);
-	
-	this.listaChats.addListSelectionListener(new ListSelectionListener(){    
-            
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                String valor;
-                Chat chatElegido;	
-                chat.setText(""); // tiene que borrar la ventana de chats
-                if (!e.getValueIsAdjusting()) { // Evita eventos duplicados    
-                    chatElegido = (Chat) listaChats.getSelectedValue();
-                    if (chatElegido != null) {
-                        cargaChat(chatElegido); // cargar
-                        c.setChatActual(chatElegido);
-                    }
-                }
-                    //chatElegido = controlador.buscaChatSeleccionado(valor);
-                    //cargaChat(chatElegido); // cargar el chat seleccionado
-            }
-        
-        });
-        
-        this.listaContactos.addListSelectionListener(new ListSelectionListener() {    
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) { // Evita eventos duplicados
-                    String nombreContacto = listaContactos.getSelectedValue(); // Obtener el nombre del contacto seleccionado
-
-                    if (nombreContacto != null) {
-                        // Buscar si ya existe un chat con este contacto
-                        Chat chatExistente = null;
-                        for (int i = 0; i < c.getChats().getSize(); i++) {
-                            Chat chat = c.getChats().getElementAt(i);
-                            if (chat.getContacto().getNickname().equals(nombreContacto)) {
-                                chatExistente = chat;
-                                break;
-                            }
-                        }
-
-                        if (chatExistente == null) {
-                            Contacto contacto = c.getUsuario().buscarContactoPorNombre(nombreContacto);
-                            chatExistente = c.nuevaConversacion(contacto);
-                        }
-
-                        if (chatExistente != null) {
-                            // Seleccionar el chat en la lista de chats y cambiar a la pestaña de chats
-                            listaChats.setSelectedValue(chatExistente, true);
-                            tabbedPane.setSelectedIndex(0); // Cambia a la pestaña de chats
-                        }
-                    }
-                }
-            }
-        });
-        
-    }
-        */
 }
 

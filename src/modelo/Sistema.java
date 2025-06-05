@@ -5,11 +5,26 @@
 package modelo;
 
 import controlador.Controlador;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOError;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.swing.DefaultListModel;
 import java.time.LocalDateTime;
+import javax.xml.parsers.FactoryConfigurationError;
+import persistencia.FactoryJson;
+import persistencia.FactoryTxt;
+import persistencia.FactoryXml;
+import persistencia.IFactoryPersistencia;
+import persistencia.IGuardador;
+import persistencia.ILector;
 
 
 /* Numero de Resquest
@@ -145,7 +160,7 @@ public class Sistema {
         mensaje = creaStringMensaje(mensaje, nickUsuario);
         Contacto contacto = buscaContactoPorNick(nicknameReceptor);
         contacto.getMensajes().add(mensaje);
-        gestionConexion.enviaRequest(nicknameReceptor+ "#" + mensaje, 1);
+        gestionConexion.enviaMensaje(nicknameReceptor, mensaje);
         controlador.cargaChat(contacto);
     }
 
@@ -187,7 +202,83 @@ public class Sistema {
             nicksChats.set(i, nick.substring(0, nick.length() - 5));
     }
 
+    public void leer(){
+        //persistencia : 
+        //clave:  
+        //busco en el archivo de config el metodo de persistencia y la clave de encriptacion
+        //nombreUsuario +.extension
+        
+     try (BufferedReader reader = new BufferedReader(new FileReader("config.txt"))) {
+            String linea;
+            String modo = null;
+            String nombreArchivo;
+            String clave;
+            while ((linea = reader.readLine()) != null) {
+                if (linea.startsWith("Persistencia: ")) {
+                    modo = linea.substring("Persistencia: ".length()).trim();
+                }else if (linea.startsWith("Clave: ")) {
+                    clave = linea.substring("Clave: ".length()).trim();
+                }
+            }
+            switch (modo) {
+                case "XML" :
+                    nombreArchivo = getNickUsuario() + ".xml";
+                    break;
+                case "JSON":
+                    nombreArchivo = getNickUsuario() + ".json";
+                break;
+                case "Texto":
+                    nombreArchivo = getNickUsuario() + ".txt";
+                break;
+                    
+                default:
+                    //no hay modo de persistencia seleccionado, llamamos a la ventana;
+                    controlador.abreVentanaPersistencia();
+                    modo = controlador.getVistaPersistencia().getModoSeleccionado();
+            }
+            IFactoryPersistencia factory;
+            ILector lector;
+             switch (modo) {
+                case "XML" :
+                    factory = new FactoryXml();
+                    lector = factory.creaLector(contactos);
+                    contactos = lector.cargar(nickUsuario);
+                    break;
+                case "JSON":
+                    factory = new FactoryJson();
+                    lector = factory.creaLector(contactos);
+                    contactos = lector.cargar(nickUsuario);
+                    break;
+                case "Texto":
+                    factory = new FactoryTxt();
+                    lector = factory.creaLector(contactos);
+                    contactos = lector.cargar(nickUsuario);
+                    break;
+                    
+                default:
+                    //no hay modo de persistencia seleccionado, llamamos a la ventana;
+                    controlador.abreVentanaPersistencia();
+                    modo = controlador.getVistaPersistencia().getModoSeleccionado();
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
 
+    public void creaArchConfigPersistencia(String modo){
+        String clave = "1234";
+        String nombreArchivo = "config" + nickUsuario + ".txt";    
+         try {
+            File archivo = new File(nombreArchivo);
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
+                writer.write("Persistencia: " + modo + "\n");
+                writer.write("Clave: " + clave + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+         }        
+    }
 }
     
     

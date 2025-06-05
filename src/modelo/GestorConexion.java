@@ -22,7 +22,7 @@ public class GestorConexion extends Thread {
     private PrintWriter out;
     private Controlador controlador;
     private Sistema sistema;
-    private ICifrado cifrador;
+    private Cifrador cifrador;
     private String user;
     // esta clase se encarga de enviar mensajes
 
@@ -32,7 +32,8 @@ public class GestorConexion extends Thread {
         this.ipServer = "localhost";
         this.user = user;
         this.out = null;
-        this.cifrador = new CifradoAES();
+        this.cifrador = new Cifrador();
+        this.cifrador.setCifrador(new CifradoAES());
     }
 
     public void run() {
@@ -100,6 +101,12 @@ public class GestorConexion extends Thread {
 
     }
 
+    public void enviaMensaje(String receptor, String mensaje){
+        String mensajeCifrado = this.cifrador.cifrar(mensaje);
+        System.out.println("El mensaje que voy a mandar es "+ mensaje + " y cifrado es "+ mensajeCifrado);
+        this.enviaRequest(receptor + "#"+ mensajeCifrado, 1);
+    }
+
     public void procesaRequest(String request) { // cuando recibe comunicación del servidor
 
         String aux[] = request.split("#", 2); // 1#emisor#hora#texto ==  1 - emisor#hora#texto
@@ -107,8 +114,10 @@ public class GestorConexion extends Thread {
         String mensaje;
 
         if (nroRequest == 1) {// 1--recibe mensaje
-            System.out.println("Me llego un mensaje " + aux[1]);
-            sistema.nuevoMensajeRecibido(aux[1]);
+            System.out.println("Me llego un mensaje cifrado" + aux[1]);
+            mensaje = cifrador.descifrar(aux[1]);
+            System.out.println("El mensaje descifrado es "+ mensaje);
+            sistema.nuevoMensajeRecibido(mensaje);
         } else if (nroRequest == 2) {
             String confirmacion = aux[1];
 

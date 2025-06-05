@@ -1,25 +1,34 @@
 package vista;
-import javax.swing.*;
-import java.awt.FlowLayout;
+import controlador.Controlador;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
+import javax.swing.*;
 
-public class VistaPersistencia {
-    public static void main(String[] args) {
+public class VistaPersistencia extends javax.swing.JFrame  {
+	
+    private JButton boton;
+	JFrame frame;
+    JPanel panel;
+    JLabel titulo;
+    String[] opciones = {"JSON", "XML", "Texto"};
+    
+    public VistaPersistencia() {
+    	
         // Crear ventana
-        JFrame frame = new JFrame("Configuración de Persistencia");
+        frame = new JFrame("Configuración de Persistencia");
         frame.getContentPane().setBackground(new Color(255, 192, 203));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(361, 200);
         frame.setLocationRelativeTo(null); // Centrar ventana
 
         // Panel principal con BoxLayout vertical
-        JPanel panel = new JPanel();
+        panel = new JPanel();
         panel.setBackground(new Color(255, 192, 203));
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         // Título centrado
-        JLabel titulo = new JLabel("Seleccione el medio de persistencia");
+        titulo = new JLabel("Seleccione el medio de persistencia");
         titulo.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 
         // Espacio
@@ -28,7 +37,7 @@ public class VistaPersistencia {
         panel.add(Box.createVerticalStrut(20));
 
         // ComboBox con opciones
-        String[] opciones = {"JSON", "XML", "Texto"};
+        
         frame.getContentPane().setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         JComboBox<String> comboBox = new JComboBox<>(opciones);
         comboBox.setAlignmentX(JComboBox.CENTER_ALIGNMENT);
@@ -38,12 +47,23 @@ public class VistaPersistencia {
         panel.add(verticalStrut);
 
         // Botón aceptar
-        JButton boton = new JButton("Aceptar");
+        boton = new JButton("Aceptar");
+        boton.setActionCommand("Aceptar");
         boton.setAlignmentX(JButton.CENTER_ALIGNMENT);
         panel.add(boton);
-
         // Agregar panel al frame y mostrar
         frame.getContentPane().add(panel);
         frame.setVisible(true);
+    }
+
+    public void setControlador(Controlador c){
+		this.boton.addActionListener(c);
+	}
+
+    public String getModoSeleccionado(){
+        JComboBox<String> comboBox = new JComboBox<>(opciones);
+        String modoSeleccionado = (String) comboBox.getSelectedItem();
+        System.out.println("Modo de persistencia seleccionado: " + modoSeleccionado);
+        return modoSeleccionado;
     }
 }
