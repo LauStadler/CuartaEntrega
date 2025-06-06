@@ -26,13 +26,13 @@ public class Controlador implements ActionListener{
     private VistaPersistencia vistaPersistencia;
     private GestorConexion gestionConexion;
     
-    public Controlador(Vista vista, VistaLogIn vistaLogIn, Sistema sistema){
+    public Controlador(Vista vista, VistaLogIn vistaLogIn, VistaPersistencia vistaPersistencia, Sistema sistema){
         this.vista = vista;
         this.vistaLogIn = vistaLogIn;
         Sistema.getInstance().setControlador(this);
-        vistaPersistencia = new VistaPersistencia();
-        vistaPersistencia.setControlador(this);
-		
+        this.vistaPersistencia = vistaPersistencia;
+        this.vistaPersistencia.setControlador(this);
+        this.vistaPersistencia.setVisible(false);
     }
 
     public void cambiaAVentanaChats(){
@@ -54,17 +54,23 @@ public class Controlador implements ActionListener{
                     vistaLogIn.muestraVentanaEmergente("Se debe ingresar un nombre de usuario");
                 else{
                     Sistema.getInstance().ingresar(nickUsuario, puertoUsuario);
-                    Sistema.getInstance().leer();
+                    
+                    
+                    // abre la ventana de persistencia
+                    if (!Sistema.getInstance().existeArchConfig()){
+                        this.vistaPersistencia.setVisible(true);
+                    }else{    
+                        // si el usuario tiene archivo de configuracion
+                        Sistema.getInstance().leeArchConfig();  
+                    }
                     // llenar campo nickUsuario
                     vista.setNickUsuario(nickUsuario);
                     // llenar campo puertoUsuario
                     vista.setPuertoUsuario(puertoUsuario);
-                    
-                    
                     //avisarle al server que nos logueamos
+                    }
                 }
             }
-        }
         
         if (e.getActionCommand().equals("Enviar")){
             System.out.print("Entre al action command de enviar mensaje!!");
@@ -87,11 +93,15 @@ public class Controlador implements ActionListener{
 
         if (e.getActionCommand().equals("Aceptar")){ // en ventana de persistencia
             // getear el modo que eligio el usuario
-            String modo = vistaPersistencia.getModoSeleccionado();
+            System.out.print("entre al action command de aceptar!");
+            String modo = this.vistaPersistencia.getModoSeleccionado();
+            this.vistaPersistencia.setVisible(false);
+            this.vistaPersistencia.dispose();
             // crear archivo de persistencia
-            Sistema.getInstance().creaArchConfigPersistencia(modo);
+            Sistema.getInstance().creaArchConfig(modo);
         }       
-    }  
+    }
+    
 
     public void cargaChat(Contacto contacto){
         vista.setTextoMensaje("");
@@ -163,9 +173,9 @@ public class Controlador implements ActionListener{
         return vista;
     }
 
-    public void abreVentanaPersistencia(){
-        this.vistaPersistencia.setVisible(true);
-    }
+    //public void abreVentanaPersistencia(){
+        //this.vistaPersistencia.setVisible(true);
+    //}
     
     public VistaPersistencia getVistaPersistencia(){
         return this.vistaPersistencia;

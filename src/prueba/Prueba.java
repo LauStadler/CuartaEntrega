@@ -7,6 +7,7 @@ import controlador.Controlador;
 import modelo.Sistema;
 import vista.Vista;
 import vista.VistaLogIn;
+import vista.VistaPersistencia;
 
 /**
  *
@@ -20,13 +21,14 @@ public class Prueba {
         
         VistaLogIn vistaLogIn = new VistaLogIn();
         Vista vista = new Vista();
-        Controlador controlador = new Controlador(vista, vistaLogIn, sistema);
+        VistaPersistencia vistaPersistencia = new VistaPersistencia();
+        Controlador controlador = new Controlador(vista, vistaLogIn, vistaPersistencia, sistema);
 
         vista.setControlador(controlador);
         vistaLogIn.setControlador(controlador);
+        
 
         vistaLogIn.setVisible(true);
-
-        
+        vistaPersistencia.setVisible(false);
     }
 }

@@ -27,6 +27,8 @@ import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Font;
 import modelo.Sistema;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 
 
@@ -49,6 +51,15 @@ public class Vista extends javax.swing.JFrame {
      */
     public Vista() {
         initComponents();
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Sistema.getInstance().guardarDatos();
+                System.exit(0);
+            }
+        });
+        
     }
 
     /**
@@ -513,7 +524,8 @@ public class Vista extends javax.swing.JFrame {
                 new Vista().setVisible(true);
             }
         });
-
+        
+        
   
     }
 
@@ -652,6 +664,7 @@ public class Vista extends javax.swing.JFrame {
     public void muestraVentanaEmergente(String mensaje){
         JOptionPane.showMessageDialog(this, mensaje);
     }
+
 
 }
 

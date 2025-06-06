@@ -233,7 +233,7 @@ public class Sistema {
                     
                 default:
                     //no hay modo de persistencia seleccionado, llamamos a la ventana;
-                    controlador.abreVentanaPersistencia();
+                    //controlador.abreVentanaPersistencia();
                     modo = controlador.getVistaPersistencia().getModoSeleccionado();
             }
             IFactoryPersistencia factory;
@@ -257,7 +257,7 @@ public class Sistema {
                     
                 default:
                     //no hay modo de persistencia seleccionado, llamamos a la ventana;
-                    controlador.abreVentanaPersistencia();
+                    //controlador.abreVentanaPersistencia();
                     modo = controlador.getVistaPersistencia().getModoSeleccionado();
             }
         }
@@ -265,8 +265,8 @@ public class Sistema {
             e.printStackTrace();
         }
     }
-
-    public void creaArchConfigPersistencia(String modo){
+   // vamos a ver si el usuario tiene o no un modo de persistencia basado en si tiene o no el archivo de configuracion
+    public void creaArchConfig(String modo){
         String clave = "1234";
         String nombreArchivo = "config" + nickUsuario + ".txt";    
          try {
@@ -278,6 +278,76 @@ public class Sistema {
         } catch (IOException e) {
             e.printStackTrace();
          }        
+    }
+ 
+    public void leeArchConfig(){
+        String modo = null;
+        String clave = null;
+        String nombreArchivo = "config" + nickUsuario + ".txt";    
+        try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                if (linea.startsWith("Persistencia: ")) {
+                    modo = linea.substring("Persistencia: ".length()).trim();
+                } else if (linea.startsWith("Clave: ")) {
+                    clave = linea.substring("Clave: ".length()).trim();
+                }
+            }
+            if (modo == null || clave == null) {
+                //controlador.abreVentanaPersistencia();
+            } else {
+                // cargar contactos desde el archivo de persistencia
+                leer();
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo de configuración: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public boolean existeArchConfig(){
+        String nombreArchivo = "config" + nickUsuario + ".txt";
+        File archivo = new File(nombreArchivo); // esto NO esta creando el archivo, solo chequea si existe
+        return archivo.exists();
+    }
+
+    public void guardarDatos(){
+        String modo = controlador.getVistaPersistencia().getModoSeleccionado();
+        IFactoryPersistencia factory;
+        IGuardador guardador;
+        switch (modo) {
+            case "XML" :
+                factory = new FactoryXml();
+                guardador = factory.creaGuardador(contactos);
+                try{
+                    guardador.guardar(contactos, nickUsuario);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+                break;
+            case "JSON":
+                factory = new FactoryJson();
+                guardador = factory.creaGuardador(contactos);
+                try{
+                    guardador.guardar(contactos, nickUsuario);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+                break;
+            case "Texto":
+                factory = new FactoryTxt();
+                guardador = factory.creaGuardador(contactos);
+                try {
+                    guardador.guardar(contactos, nickUsuario);
+                } catch (Exception e) {
+                    // TODO: handle exception
+                }
+                break;
+            default:
+                System.out.println("No se ha seleccionado un modo de persistencia válido.");
+        }
     }
 }
     

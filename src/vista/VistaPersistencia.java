@@ -8,12 +8,15 @@ import javax.swing.*;
 public class VistaPersistencia extends javax.swing.JFrame  {
 	
     private JButton boton;
+    private JComboBox<String> comboBox;
 	JFrame frame;
     JPanel panel;
     JLabel titulo;
     String[] opciones = {"JSON", "XML", "Texto"};
     
     public VistaPersistencia() {
+
+
     	
         // Crear ventana
         frame = new JFrame("Configuración de Persistencia");
@@ -39,7 +42,7 @@ public class VistaPersistencia extends javax.swing.JFrame  {
         // ComboBox con opciones
         
         frame.getContentPane().setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-        JComboBox<String> comboBox = new JComboBox<>(opciones);
+        comboBox = new JComboBox<>(opciones);
         comboBox.setAlignmentX(JComboBox.CENTER_ALIGNMENT);
         panel.add(comboBox);
         Component verticalStrut = Box.createVerticalStrut(20);
@@ -53,7 +56,7 @@ public class VistaPersistencia extends javax.swing.JFrame  {
         panel.add(boton);
         // Agregar panel al frame y mostrar
         frame.getContentPane().add(panel);
-        frame.setVisible(true);
+        //frame.setVisible(true);
     }
 
     public void setControlador(Controlador c){
@@ -61,9 +64,16 @@ public class VistaPersistencia extends javax.swing.JFrame  {
 	}
 
     public String getModoSeleccionado(){
-        JComboBox<String> comboBox = new JComboBox<>(opciones);
-        String modoSeleccionado = (String) comboBox.getSelectedItem();
+        
+        String modoSeleccionado = (String) this.comboBox.getSelectedItem();
         System.out.println("Modo de persistencia seleccionado: " + modoSeleccionado);
         return modoSeleccionado;
+    }
+
+    public void setVisible(boolean visible) {
+        this.frame.setVisible(visible);
+    }
+    public void dispose() {
+        this.frame.dispose();
     }
 }

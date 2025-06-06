@@ -23,7 +23,9 @@ public class GuardadorJson implements IGuardador {
         String nombreArchivo = nombreUsuario + ".json";
 
         try (Writer writer = new FileWriter(nombreArchivo)) {
+
             gson.toJson(contactos, writer);
+            
         }
     }
 }
