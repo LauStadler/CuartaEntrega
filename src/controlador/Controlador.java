@@ -36,6 +36,7 @@ public class Controlador implements ActionListener{
     }
 
     public void cambiaAVentanaChats(){
+        //this.vista.setControlador(this);
         this.vista.setVisible(true);
         this.vistaLogIn.setVisible(false);
     }

@@ -24,11 +24,14 @@ public class Prueba {
         VistaPersistencia vistaPersistencia = new VistaPersistencia();
         Controlador controlador = new Controlador(vista, vistaLogIn, vistaPersistencia, sistema);
 
-        vista.setControlador(controlador);
         vistaLogIn.setControlador(controlador);
         
 
         vistaLogIn.setVisible(true);
         vistaPersistencia.setVisible(false);
+        // el problema es que setControlador en vista es el que carga las listas especiales
+        // y no se puede hacer antes de que se carguen en el sistema
+        // si se tienen que sacar de archivos del usuario
+         vista.setControlador(controlador);
     }
 }

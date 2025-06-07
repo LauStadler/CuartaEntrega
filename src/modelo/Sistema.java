@@ -261,9 +261,10 @@ public class Sistema {
                     modo = controlador.getVistaPersistencia().getModoSeleccionado();
                 }
 
-                System.out.println(this.contactos);
-                System.out.println(this.nicksChats);
-                System.out.println(this.nicksContactos);
+                System.out.println("Los contactos son: "+ this.contactos);
+                System.out.println("el nickname del primer contactos es :"+this.contactos.get(0).getNickname());
+                System.out.println("Los nicks que tieen que aparecer en chats son:" + this.nicksChats);
+                System.out.println("Los nicks que tienen que aparecer en lista contactos son: " +this.nicksContactos);
 
             }
         catch(IOException e){
@@ -272,6 +273,7 @@ public class Sistema {
     }
    // vamos a ver si el usuario tiene o no un modo de persistencia basado en si tiene o no el archivo de configuracion
     public void creaArchConfig(String modo){
+        this.modoPersistencia = modo;
         String clave = "1234";
         String nombreArchivo = "config" + nickUsuario + ".txt";    
          try {

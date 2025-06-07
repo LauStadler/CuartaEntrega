@@ -11,7 +11,7 @@ public abstract class AbstractLector implements ILector{
     public abstract DefaultListModel<Contacto> cargarContactos(String nombreUsuario) throws IOException;
 
     public DefaultListModel<String> cargarNicksContactos(DefaultListModel<Contacto> contactos) {
-        DefaultListModel<String> nicks = new DefaultListModel<>();
+        DefaultListModel<String> nicks = new DefaultListModel<String>();
         for (int i = 0; i < contactos.size(); i++) {
             Contacto contacto = contactos.get(i);
             nicks.addElement(contacto.getNickname());
@@ -19,7 +19,7 @@ public abstract class AbstractLector implements ILector{
         return nicks;
     }
     public DefaultListModel<String> cargarNicksChats(DefaultListModel<Contacto> contactos) {
-        DefaultListModel<String> nicks = new DefaultListModel<>();
+        DefaultListModel<String> nicks = new DefaultListModel<String>();
         for (int i = 0; i < contactos.size(); i++) {
             Contacto contacto = contactos.get(i);
             if (contacto.getTieneChat()) {

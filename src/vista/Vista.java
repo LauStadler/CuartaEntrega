@@ -586,6 +586,9 @@ public class Vista extends javax.swing.JFrame {
     public void setControlador(Controlador c){
 		this.bEnviar.addActionListener(c);
 		this.bAgregarContacto.addActionListener(c);
+
+        
+
         listaContactos.setModel(Sistema.getInstance().getNicksContactos());
         listaChats.setModel(Sistema.getInstance().getNicksChats()); 
         
