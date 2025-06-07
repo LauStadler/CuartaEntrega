@@ -8,14 +8,14 @@ import modelo.Contacto;
 import java.io.IOException;
 import java.io.File;
 
-public class LectorXml implements ILector {
+public class LectorXml extends AbstractLector implements ILector {
 
     public String nombreArchivo(String nombreUsuario){
         return nombreUsuario + ".xml";
     }
 
     @Override
-    public DefaultListModel<Contacto> cargar(String nombreUsuario) throws IOException{    
+    public DefaultListModel<Contacto> cargarContactos (String nombreUsuario) throws IOException{    
         DefaultListModel<Contacto> contactos = new DefaultListModel<Contacto>();
         File archivo = new File(nombreArchivo(nombreUsuario)); // ESTO NO CREA ARCHIVO, crea el objeto ruta a archivo a ver si existe
         

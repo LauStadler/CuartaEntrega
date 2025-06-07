@@ -41,5 +41,10 @@ public class Contacto {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
-    
+
+
+    @Override
+    public String toString() {
+        return "Contacto [nickname=" + nickname + ", tieneChat=" + tieneChat + ", mensajes=" + mensajes + "]";
+    }    
 }

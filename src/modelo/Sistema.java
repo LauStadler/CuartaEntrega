@@ -52,6 +52,8 @@ public class Sistema {
     private DefaultListModel<String> nicksContactos = new DefaultListModel<String>();
     private DefaultListModel<String> nicksChats = new DefaultListModel<String>();
 
+    private String modoPersistencia;
+
 
     private Sistema(){
         super();
@@ -202,24 +204,12 @@ public class Sistema {
             nicksChats.set(i, nick.substring(0, nick.length() - 5));
     }
 
-    public void leer(){
+    public void leer(String modo){
         //persistencia : 
         //clave:  
         //busco en el archivo de config el metodo de persistencia y la clave de encriptacion
         //nombreUsuario +.extension
-        
-     try (BufferedReader reader = new BufferedReader(new FileReader("config.txt"))) {
-            String linea;
-            String modo = null;
-            String nombreArchivo;
-            String clave;
-            while ((linea = reader.readLine()) != null) {
-                if (linea.startsWith("Persistencia: ")) {
-                    modo = linea.substring("Persistencia: ".length()).trim();
-                }else if (linea.startsWith("Clave: ")) {
-                    clave = linea.substring("Clave: ".length()).trim();
-                }
-            }
+        String nombreArchivo;
             switch (modo) {
                 case "XML" :
                     nombreArchivo = getNickUsuario() + ".xml";
@@ -229,6 +219,7 @@ public class Sistema {
                 break;
                 case "Texto":
                     nombreArchivo = getNickUsuario() + ".txt";
+                    System.out.println("Estoy buscando el archivo de texto: " + nombreArchivo);
                 break;
                     
                 default:
@@ -238,29 +229,43 @@ public class Sistema {
             }
             IFactoryPersistencia factory;
             ILector lector;
+            try{
              switch (modo) {
                 case "XML" :
                     factory = new FactoryXml();
                     lector = factory.creaLector(contactos);
-                    contactos = lector.cargar(nickUsuario);
+                    this.contactos = lector.cargarContactos(nickUsuario);
+                    this.nicksContactos = lector.cargarNicksContactos(contactos);
+                    this.nicksChats = lector.cargarNicksChats(contactos);
                     break;
                 case "JSON":
                     factory = new FactoryJson();
                     lector = factory.creaLector(contactos);
-                    contactos = lector.cargar(nickUsuario);
+                    this.contactos = lector.cargarContactos(nickUsuario);
+                    this.nicksContactos = lector.cargarNicksContactos(contactos);
+                    this.nicksChats = lector.cargarNicksChats(contactos);
                     break;
                 case "Texto":
                     factory = new FactoryTxt();
+                    System.out.println("Estoy creando la factory de texto");
                     lector = factory.creaLector(contactos);
-                    contactos = lector.cargar(nickUsuario);
+                    System.out.println("Estoy cargando los usuarios");
+                    this.contactos = lector.cargarContactos(nickUsuario);
+                    this.nicksContactos = lector.cargarNicksContactos(contactos);
+                    this.nicksChats = lector.cargarNicksChats(contactos);
                     break;
                     
                 default:
                     //no hay modo de persistencia seleccionado, llamamos a la ventana;
                     //controlador.abreVentanaPersistencia();
                     modo = controlador.getVistaPersistencia().getModoSeleccionado();
+                }
+
+                System.out.println(this.contactos);
+                System.out.println(this.nicksChats);
+                System.out.println(this.nicksContactos);
+
             }
-        }
         catch(IOException e){
             e.printStackTrace();
         }
@@ -289,6 +294,7 @@ public class Sistema {
             while ((linea = reader.readLine()) != null) {
                 if (linea.startsWith("Persistencia: ")) {
                     modo = linea.substring("Persistencia: ".length()).trim();
+                    this.modoPersistencia = modo;
                 } else if (linea.startsWith("Clave: ")) {
                     clave = linea.substring("Clave: ".length()).trim();
                 }
@@ -297,7 +303,8 @@ public class Sistema {
                 //controlador.abreVentanaPersistencia();
             } else {
                 // cargar contactos desde el archivo de persistencia
-                leer();
+                System.out.println("voy a pedirle que lea el archivo de persistencia");
+                leer(modo);
             }
         } catch (IOException e) {
             System.out.println("Error al leer el archivo de configuración: " + e.getMessage());
@@ -312,7 +319,7 @@ public class Sistema {
     }
 
     public void guardarDatos(){
-        String modo = controlador.getVistaPersistencia().getModoSeleccionado();
+        String modo = this.modoPersistencia;
         IFactoryPersistencia factory;
         IGuardador guardador;
         switch (modo) {

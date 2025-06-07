@@ -11,12 +11,12 @@ import java.util.List;
 
 import modelo.Contacto;
 
-public class LectorJson implements ILector {
+public class LectorJson extends AbstractLector  implements ILector {
 
     private final Gson gson = new Gson();
 
     @Override
-    public DefaultListModel<Contacto> cargar(String nombreUsuario) throws IOException {
+    public DefaultListModel<Contacto> cargarContactos(String nombreUsuario) throws IOException {
         String nombreArchivo = nombreUsuario + ".json";
         try (Reader reader = new FileReader(nombreArchivo)) {
             return gson.fromJson(reader, new TypeToken<DefaultListModel<Contacto>>(){}.getType());
