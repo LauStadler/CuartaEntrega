@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -18,14 +19,16 @@ public class GuardadorJson implements IGuardador {
 
     private final Gson gson = new Gson();
 
-   @Override
-    public void guardar(DefaultListModel<Contacto> contactos, String nombreUsuario) throws IOException{
+    @Override
+    public void guardar(DefaultListModel<Contacto> contactos, String nombreUsuario) throws IOException {
         String nombreArchivo = nombreUsuario + ".json";
-
-        try (Writer writer = new FileWriter(nombreArchivo)) {
-
-            gson.toJson(contactos, writer);
-            
+        // Convertir DefaultListModel a List<Contacto>
+        List<Contacto> lista = new ArrayList<>();
+        for (int i = 0; i < contactos.size(); i++) {
+            lista.add(contactos.get(i));
+        }
+        try (FileWriter writer = new FileWriter(nombreArchivo)) {
+            gson.toJson(lista, writer);
         }
     }
 }

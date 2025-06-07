@@ -584,6 +584,7 @@ public class Vista extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
     
     public void setControlador(Controlador c){
+        System.out.println("Entre al setControlador de Vista!");
 		this.bEnviar.addActionListener(c);
 		this.bAgregarContacto.addActionListener(c);
 
@@ -608,15 +609,13 @@ public class Vista extends javax.swing.JFrame {
         this.chat.setText("");
     }
     
-     public void cargaChat(ArrayList<String> mensajes) {
+    public void cargaChat(ArrayList<String> mensajes) {
         for (String mensaje : mensajes){
             String[] mensajeFormateado = mensaje.split("#", 3);
             String hora = mensajeFormateado[1].substring(11,16);
             this.chat.append(mensajeFormateado[0] + " ["+ hora +"]: " +mensajeFormateado[2] + "\n");
         }
     }
-
-	
     
     private void textoMensajeKeyReleased(java.awt.event.KeyEvent evt) {
         if (textoMensaje.getText().length() != 0) {
@@ -639,6 +638,13 @@ public class Vista extends javax.swing.JFrame {
         this.nombreChatSeleccionado.setText(nickname);
     }
 
+    public void setListaContactos() {
+        listaContactos.setModel(Sistema.getInstance().getNicksContactos());
+    }
+
+    public void setListaChats() {
+        listaChats.setModel(Sistema.getInstance().getNicksChats()); 
+    }
 
     public void cambiarAVentanaChat() {
         this.tabbedPane.setSelectedIndex(0); // Cambia al tab donde están los chats

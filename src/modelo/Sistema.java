@@ -260,7 +260,9 @@ public class Sistema {
                     //controlador.abreVentanaPersistencia();
                     modo = controlador.getVistaPersistencia().getModoSeleccionado();
                 }
-
+                
+                controlador.recargaVista();
+                
                 System.out.println("Los contactos son: "+ this.contactos);
                 System.out.println("el nickname del primer contactos es :"+this.contactos.get(0).getNickname());
                 System.out.println("Los nicks que tieen que aparecer en chats son:" + this.nicksChats);
@@ -274,7 +276,9 @@ public class Sistema {
    // vamos a ver si el usuario tiene o no un modo de persistencia basado en si tiene o no el archivo de configuracion
     public void creaArchConfig(String modo){
         this.modoPersistencia = modo;
-        String clave = "1234";
+        // 
+        String clave = "1234567890abcdef"; // clave por defecto de 16 caracteres o mas
+        this.gestionConexion.setClave(clave);
         String nombreArchivo = "config" + nickUsuario + ".txt";    
          try {
             File archivo = new File(nombreArchivo);
@@ -299,6 +303,7 @@ public class Sistema {
                     this.modoPersistencia = modo;
                 } else if (linea.startsWith("Clave: ")) {
                     clave = linea.substring("Clave: ".length()).trim();
+                    this.gestionConexion.setClave(clave);
                 }
             }
             if (modo == null || clave == null) {
@@ -357,6 +362,7 @@ public class Sistema {
             default:
                 System.out.println("No se ha seleccionado un modo de persistencia válido.");
         }
+        
     }
 }
     

@@ -32,8 +32,8 @@ public class GestorConexion extends Thread {
         this.ipServer = "localhost";
         this.user = user;
         this.out = null;
-      //  this.cifrador = new Cifrador();
-      //  this.cifrador.setCifrador(new CifradoAES());
+        this.cifrador = new Cifrador();
+        this.cifrador.setCifrador(new CifradoAES());
     }
 
     public void run() {
@@ -95,6 +95,10 @@ public class GestorConexion extends Thread {
         }
     }
 
+    public void setClave(String clave){
+        this.cifrador.setClave(clave);
+    }
+
     public void enviaRequest(String mensaje, int nrorequest) {// yo me quiero comunicar con el servidor
         String request = String.valueOf(nrorequest) + "#" + mensaje;
         out.println(request);
@@ -102,9 +106,8 @@ public class GestorConexion extends Thread {
     }
 
     public void enviaMensaje(String receptor, String mensaje){
-        //String mensajeCifrado = this.cifrador.cifrar(mensaje);
-        //System.out.println("El mensaje que voy a mandar es "+ mensaje + " y cifrado es "+ mensajeCifrado);
-        String mensajeCifrado = mensaje;
+        String mensajeCifrado = this.cifrador.cifrar(mensaje);
+        System.out.println("El mensaje que voy a mandar es "+ mensaje + " y cifrado es "+ mensajeCifrado);
         this.enviaRequest(receptor + "#"+ mensajeCifrado, 1);
     }
 
@@ -116,7 +119,7 @@ public class GestorConexion extends Thread {
 
         if (nroRequest == 1) {// 1--recibe mensaje
             System.out.println("Me llego un mensaje cifrado" + aux[1]);
-            mensaje = aux[1]; //.descifrar(aux[1]);
+            mensaje = cifrador.descifrar(aux[1]);
             System.out.println("El mensaje descifrado es "+ mensaje);
             sistema.nuevoMensajeRecibido(mensaje);
         } else if (nroRequest == 2) {

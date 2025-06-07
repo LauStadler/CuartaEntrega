@@ -1,2 +1,0 @@
-Persistencia: Texto
-Clave: 1234

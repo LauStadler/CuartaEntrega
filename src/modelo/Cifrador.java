@@ -9,6 +9,11 @@ public class Cifrador {
         super();
     }
 
+    public void setClave(String clave){
+        cifrador.setClave(clave);
+    }
+
+
     public void setCifrador(ICifrado cifrador){
         this.cifrador = cifrador;
     }

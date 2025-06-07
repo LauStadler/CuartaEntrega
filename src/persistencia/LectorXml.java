@@ -22,14 +22,45 @@ public class LectorXml extends AbstractLector implements ILector {
         if (!archivo.exists()){
             System.out.println("El archivo " + nombreArchivo(nombreUsuario) + " no existe.");
         }
-        try ( XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(nombreArchivo(nombreUsuario))))){
-            contactos = (DefaultListModel<Contacto>) decoder.readObject();
-            decoder.close();
+        try (XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(archivo)))) {
+        while (true) {
+            try {
+                Contacto c = (Contacto) decoder.readObject();
+                System.out.println("Cargue el contacto "+ c);
+                contactos.addElement(c);
+            } catch (ArrayIndexOutOfBoundsException | java.util.NoSuchElementException e) {
+                // Fin del archivo XML
+                break;
+            } catch (Exception e) {
+                System.out.println("Error al leer un contacto: " + e.getMessage());
+                break;
+            }
         }
-        catch (IOException e) {
-            System.out.println("Error al leer el archivo " + nombreArchivo(nombreUsuario) + ": " + e.getMessage());
-            
-        }
+    }
+        System.out.println("Se cargaron " + contactos.size() + " contactos desde el archivo XML.");
         return contactos;
+        
     }
 }
+
+/*
+
+    try (XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(archivo)))) {
+        while (true) {
+            try {
+                Contacto c = (Contacto) decoder.readObject();
+                contactos.addElement(c);
+            } catch (ArrayIndexOutOfBoundsException | java.util.NoSuchElementException e) {
+                // Fin del archivo XML
+                break;
+            } catch (Exception e) {
+                System.out.println("Error al leer un contacto: " + e.getMessage());
+                break;
+            }
+        }
+    }
+
+    return contactos;
+}
+
+ */

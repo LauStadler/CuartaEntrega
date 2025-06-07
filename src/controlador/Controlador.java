@@ -103,6 +103,10 @@ public class Controlador implements ActionListener{
         }       
     }
     
+    public void recargaVista(){
+        this.vista.setListaChats();
+        this.vista.setListaContactos();
+    }
 
     public void cargaChat(Contacto contacto){
         vista.setTextoMensaje("");

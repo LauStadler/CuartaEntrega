@@ -14,6 +14,10 @@ public class Contacto {
     private String nickname;
     private boolean tieneChat;
     private ArrayList<String> mensajes = new ArrayList<String>();
+
+    // para que funcione xml tenemos que tener un constructor vacio de las clasese que queremos persistir
+    public Contacto() {
+    }
     
     public Contacto(String nickname) {
         super();
@@ -41,7 +45,12 @@ public class Contacto {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
-
+    
+    
+    // esto es para que funcione la persistencia en xml
+    public void setMensajes(ArrayList<String> mensajes){
+        this.mensajes = mensajes;
+    }
 
     @Override
     public String toString() {

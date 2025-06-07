@@ -19,6 +19,7 @@ public class GuardadorXml implements IGuardador {
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(nombreArchivo(nombreUsuario))));
         for (int i = 0; i < contactos.size(); i++) {
             Contacto c = contactos.getElementAt(i);
+            System.out.println(contactos.getElementAt(i).toString());
             // Write the Contacto object to the XML file
             encoder.writeObject(c);
         }
