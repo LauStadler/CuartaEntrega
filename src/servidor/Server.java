@@ -29,7 +29,7 @@ public class Server extends Thread {
         this.puertoClientes = puerto;
         this.puertoEntreServidores = puerto + 1000;
         this.puertoEscMonitor = puerto + 2000;
-		startHeartbeat();
+        startHeartbeat();
     }
 
     public void run() {
@@ -57,14 +57,13 @@ public class Server extends Thread {
                     cliente.start();
                     loggeaUser(user, cliente);
                 }
-			 }	
+            }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             System.out.println(e.getMessage());
-		}
+        }
     }
-
 
     public int getPuertoClientes() {
         return this.puertoClientes;
@@ -79,16 +78,16 @@ public class Server extends Thread {
     }
 
     public void setSoyPrincipal(boolean state) {
-        
+
         if (state && (this.socketClientes == null || socketClientes.isClosed())) {
             try {
                 this.socketClientes = new ServerSocket(puertoClientes);
-				System.out.println("Yo soy el principal bitch");
+                System.out.println("Yo soy el principal bitch");
                 System.out.println("La lista de usuarios es: " + usuariosReg.toString());
             } catch (IOException ex) {
             }
         }
-		this.soyPrincipal = state;
+        this.soyPrincipal = state;
     }
 
     public boolean isSoyPrincipal() {
@@ -100,6 +99,7 @@ public class Server extends Thread {
         // corta cada string
         // lo manda
         // lo elimina
+        // receptor#mensaje
         String nickname[] = user.split("#", 2);
         System.out.println("busco mensajes pendientes del usuario: " + nickname[0]);
         System.out.println("Mensajes pendiente: " + this.mensajesPendientes);
@@ -126,24 +126,26 @@ public class Server extends Thread {
             i++;
         }
 
-        if (i < n) {//el usuario ya se habia loggeado antes, lo pongo como conectado
-            if (this.getUsuariosReg().get(i).isConectado()) { // alguien esta tratando de robar un nick ya usado por otra persona
+        if (i < n) {// el usuario ya se habia loggeado antes, lo pongo como conectado
+            if (this.getUsuariosReg().get(i).isConectado()) { // alguien esta tratando de robar un nick ya usado por
+                // otra persona
                 // error, ya existe alguien con ese nombre de usuario
                 System.out.println("Se esta tratando de meter en otro lado");
                 String mensaje = "false";
 
                 clientHandler.confirmaLogIn(mensaje);
             } else {
-                //System.out.println("el usuario ya se habia loggeado antes, lo pongo como conectado");
+                // System.out.println("el usuario ya se habia loggeado antes, lo pongo como
+                // conectado");
                 this.getUsuariosReg().get(i).setConectado(true);
                 this.getUsuariosReg().get(i).setClientHandler(clientHandler);
                 String mensaje = "true";
                 clientHandler.confirmaLogIn(mensaje);
-                //busca mensajes pendientes para ese usuario y los envia
+                // busca mensajes pendientes para ese usuario y los envia
                 buscaYEnviaPendientes(user, clientHandler);
             }
-        } else {//es un usuario nuevo, lo registro en el sistema
-            //System.out.println("es un usuario nuevo, lo registro en el sistema");
+        } else {// es un usuario nuevo, lo registro en el sistema
+            // System.out.println("es un usuario nuevo, lo registro en el sistema");
             Usuario nuevoUsuario = new Usuario(usuario[0]);
             nuevoUsuario.setClientHandler(clientHandler);
             nuevoUsuario.setConectado(true);
@@ -170,32 +172,33 @@ public class Server extends Thread {
         return usuariosReg;
     }
 
-    public void enviaMensaje(String receptor, String mensaje) { //un usurio quiere enviar un mensaje
-        //busca el receptor en la lista y si esta conectado
+    public void enviaMensaje(String receptor, String mensaje) { // un usurio quiere enviar un mensaje
+        // busca el receptor en la lista y si esta conectado
         Usuario user = buscaUsuario(receptor);
         if (user.isConectado()) {
             System.out.println("El usuario esta conectado le paso el mensaje");
-            //obtiene su clientHandler
-            //llama a la funcion de enviaMensaje en clientHandler
+            // obtiene su clientHandler
+            // llama a la funcion de enviaMensaje en clientHasssndler
             user.getClientHandler().recibeMensaje(mensaje);
         } else {
             System.out.println("El usuario no esta conectado lo dejo pendiente");
+            System.out.println("mensaje pendiente:" + mensaje);
+            System.out.println("User que no esta conectado: " + receptor);
             // vuelve a unir el string y lo agregva a mensajes pendientes
-            mensajesPendientes.add(receptor + "#" + mensaje);
-            gestionDeServer.envioActualizacion(11 + "#" + mensaje);
+            String aux = receptor + "#" + mensaje;
+            mensajesPendientes.add(aux);
+            gestionDeServer.envioActualizacion(11 + "#" + aux);
         }
     }
 
     public Usuario buscaUsuario(String nickUsuario) {
         int i, n;
         i = 0;
-        Usuario aux = null;
         n = this.getUsuariosReg().size();
         while (i < n && !this.getUsuariosReg().get(i).getNickname().equals(nickUsuario)) {
             i++;
         }
         return this.getUsuariosReg().get(i);
-
     }
 
     // para el directorio, ver si existe o no
@@ -222,78 +225,86 @@ public class Server extends Thread {
         return this.mensajesPendientes;
     }
 
-public void startHeartbeat() {
-    try {
-        Socket socket = new Socket("localhost", 1003);
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        Timer timer = new Timer();
+    public void startHeartbeat() {
+        try {
+            Socket socket = new Socket("localhost", 1003);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            Timer timer = new Timer();
 
-        // Enviamos el número de servidor al conectar
-        String nroServer = Integer.toString(getPuertoClientes());
-        out.println(nroServer); // aqui le manda el server que es, 1000 o 1001, el monitor debe leerlo para asignarle un
-        System.out.println("Me conecte al monitor");
-        // Leemos el rol que nos asigna el servidor (solo una vez)
-        System.out.println("Esperando rol del monitor...");
-        String rol = in.readLine(); // puede ser "principal" o "secundario"
-        if (rol == null) {
-            System.out.println("Error al recibir el rol del monitor");
-            return;
-        }
-        if (rol.equals("PRINCIPAL"))
-            setSoyPrincipal(true);
-        System.out.println("Mi rol es "+ rol);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    out.println(nroServer); // seguimos enviando heartbeats
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    timer.cancel(); // cancelamos el timer
+            // Enviamos el número de servidor al conectar
+            String nroServer = Integer.toString(getPuertoClientes());
+            out.println(nroServer); // aqui le manda el server que es, 1000 o 1001, el monitor debe leerlo para
+            // asignarle un
+            System.out.println("Me conecte al monitor");
+            // Leemos el rol que nos asigna el servidor (solo una vez)
+            System.out.println("Esperando rol del monitor...");
+            String rol = in.readLine(); // puede ser "principal" o "secundario"
+            if (rol == null) {
+                System.out.println("Error al recibir el rol del monitor");
+                return;
+            }
+            if (rol.equals("PRINCIPAL")) {
+                setSoyPrincipal(true);
+            }
+            System.out.println("Mi rol es " + rol);
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
                     try {
-                        in.close();
-                        out.close();
-                        socket.close();
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
+                        out.println(nroServer); // seguimos enviando heartbeats
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        timer.cancel(); // cancelamos el timer
+                        try {
+                            in.close();
+                            out.close();
+                            socket.close();
+                        } catch (IOException ioException) {
+                            ioException.printStackTrace();
+                        }
                     }
                 }
-            }
-        }, 0, 1000);
+            }, 0, 1000);
 
-    } catch (IOException e) {
-        e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-}
 
     public void stopHeartbeat(Socket socket, PrintWriter out, Timer timer) {
         if (timer != null) {
             timer.cancel();
         }
         try {
-            if (out != null) out.close();
-            if (socket != null) socket.close();
+            if (out != null) {
+                out.close();
+            }
+            if (socket != null) {
+                socket.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-/* 
-    public void startHeartbeat() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try (Socket s = new Socket("localhost", 1003); PrintWriter out = new PrintWriter(s.getOutputStream(), true)) {
-                    String nroServer = Integer.toString(getPuertoClientes());
-                    out.println(nroServer); //  manda mensjes con "1000" o "1001"
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 0, 1000); // envía cada 1 segundo
-    }*/
-
+    /*
+     * public void startHeartbeat() {
+     * new Timer().schedule(new TimerTask() {
+     * 
+     * @Override
+     * public void run() {
+     * try (Socket s = new Socket("localhost", 1003); PrintWriter out = new
+     * PrintWriter(s.getOutputStream(), true)) {
+     * String nroServer = Integer.toString(getPuertoClientes());
+     * out.println(nroServer); // manda mensjes con "1000" o "1001"
+     * } catch (IOException e) {
+     * e.printStackTrace();
+     * }
+     * }
+     * }, 0, 1000); // envía cada 1 segundo
+     * }
+     */
     public void escuchaMonitor() {
         Thread hilo = new Thread(() -> {
             try {
@@ -309,7 +320,8 @@ public void startHeartbeat() {
 
                     if (mensaje != null && mensaje.equals("AHORA SOS PRINCIPAL")) {
                         System.out.println("Me convierto en servidor principal");
-                        // y aca tenemos que cambiar los usuarios para que se conecten al que ahora es principal
+                        // y aca tenemos que cambiar los usuarios para que se conecten al que ahora es
+                        // principal
                         setSoyPrincipal(true);
                     }
 
@@ -319,7 +331,8 @@ public void startHeartbeat() {
                 System.out.println("Error en escuchaMonitor: " + e.getMessage());
                 e.printStackTrace();
             }
-        }); hilo.start();
+        });
+        hilo.start();
     }
-   
+
 }

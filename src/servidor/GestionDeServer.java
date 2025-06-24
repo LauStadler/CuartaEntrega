@@ -31,8 +31,8 @@ public class GestionDeServer extends Thread {
             //cuando soy secundario me conecto al principal
             try {
                 if (server.getPuertoClientes() == 1001) {
-                    mainServer = new Socket("localhost", 2002); 
-                }else {
+                    mainServer = new Socket("localhost", 2002);
+                } else {
                     mainServer = new Socket("localhost", 2001);
                 }
                 this.out = new PrintWriter(mainServer.getOutputStream(), true);
@@ -48,46 +48,48 @@ public class GestionDeServer extends Thread {
 
     }
 
-       public void run(){
+    public void run() {
         System.out.println("Inicie el sistema de conexion");
-		String actualizacion = null;	
+        String actualizacion = null;
         while (true) {
-				try {
-                    if (server.isSoyPrincipal()){
-                        // si nunca fui ppal, en el constructor nunca abri mi server socket. Tengo que abrirlo aca
-                        if (this.socketServidores == null){
-                            this.socketServidores = new ServerSocket(server.getPuertoServidores());
-                        }
+            try {
+                if (server.isSoyPrincipal()) {
+                    // si nunca fui ppal, en el constructor nunca abri mi server socket. Tengo que abrirlo aca
+                    if (this.socketServidores == null) {
+                        this.socketServidores = new ServerSocket(server.getPuertoServidores());
+                    }
+                    System.out.println("Voy a escuchar a otros server: " + socketServidores);
+                    this.serverSecundario = socketServidores.accept();
+                    System.out.println("Acepte una conexion de servidor secundario");
+                    this.out = new PrintWriter(serverSecundario.getOutputStream(), true);
+                    this.in = new BufferedReader(new InputStreamReader(serverSecundario.getInputStream()));
+                    actualizacion = in.readLine();
+                    if (actualizacion != null) {
+                        System.out.println("Recibi request de actualizacion");
+                        update(); // seteo server secundario    
+                    }
 
-                        this.serverSecundario = socketServidores.accept();
-                        System.out.println("Acepte una conexion de servidor secundario");
-                        this.out = new PrintWriter(serverSecundario.getOutputStream(), true);
-                        this.in = new BufferedReader(new InputStreamReader(serverSecundario.getInputStream()));
-                        actualizacion = in.readLine();
-                        if(actualizacion != null){
-                            System.out.println("Recibi request de actualizacion");
-                            update(); // seteo server secundario    
-                        }
-                        
-                    }
-                    else{
-                        System.out.println("Entre al else de no soy principal");
-                        actualizacion = in.readLine();
-                        recibeActualizacion(actualizacion);
-                    }				
-				} catch (IOException e) {
-					
-					e.printStackTrace();
-					System.out.println(e.getMessage());
-                    try {
-                        mainServer.close();
+                } else {
+                    System.out.println("Entre al else de no soy principal");
+                    actualizacion = in.readLine();
+                    recibeActualizacion(actualizacion);
+                }
+            } catch (IOException e) {
+
+                e.printStackTrace();
+                System.out.println(e.getMessage());
+                try {
+                    if (mainServer != null) {
+                        mainServer.close(); 
+                    }else if (socketServidores != null) {
                         socketServidores.close();
-                    } catch (IOException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
                     }
-				}	
-		}
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+        }
     }
 
     /*
@@ -118,19 +120,17 @@ public class GestionDeServer extends Thread {
             nuevoUser.setConectado(false);
             server.getUsuariosReg().add(nuevoUser);
 
-        }
-        /*else if (nroRequest == 14)// 14-- se loggea un usuario registrado
+        } /*else if (nroRequest == 14)// 14-- se loggea un usuario registrado
 		{
             //nombre#puerto
             String datosUsuario[] = aux[1].split("#", 2);
             server.buscaUsuario(datosUsuario[0]).setConectado(true);
-        }*/
-        else if(nroRequest == 15)// 15- usuario cerro sesion
-       {   
-           String usuario[] = aux[1].split("#",2);
-           server.buscaUsuario(usuario[0]).setConectado(false);
-       }
-       
+        }*/ else if (nroRequest == 15)// 15- usuario cerro sesion
+        {
+            String usuario[] = aux[1].split("#", 2);
+            server.buscaUsuario(usuario[0]).setConectado(false);
+        }
+
     }
 
     //el principal envia actualizaciones en tiempo real

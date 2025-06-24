@@ -34,12 +34,12 @@ import persistencia.ILector;
  * 4--Agregar Contacto
  * 
  * */
-
 /**
  *
  * @author Usuario
  */
 public class Sistema {
+
     //private Receptor receptor;
     private String ipUsuario = "localhost";
     private int puertoUsuario;
@@ -54,111 +54,117 @@ public class Sistema {
 
     private String modoPersistencia;
 
-
-    private Sistema(){
+    private Sistema() {
         super();
     }
 
-    public static Sistema getInstance(){
-        if (instance == null)
+    public static Sistema getInstance() {
+        if (instance == null) {
             instance = new Sistema();
+        }
         return instance;
     }
 
-    public void setNickUsuario(String nickUsuario){
+    public void setNickUsuario(String nickUsuario) {
         this.nickUsuario = nickUsuario;
     }
-    public void setPuertoUsuario(int puertoUsuario){
+
+    public void setPuertoUsuario(int puertoUsuario) {
         this.puertoUsuario = puertoUsuario;
     }
-    public int getPuertoUsuario(){
+
+    public int getPuertoUsuario() {
         return this.puertoUsuario;
     }
-    public String getNickUsuario(){
+
+    public String getNickUsuario() {
         return this.nickUsuario;
     }
-    public String getIpUsuario(){
+
+    public String getIpUsuario() {
         return this.ipUsuario;
     }
-    public DefaultListModel<Contacto> getContactos(){
+
+    public DefaultListModel<Contacto> getContactos() {
         return this.contactos;
     }
-    public DefaultListModel<String> getNicksContactos(){
+
+    public DefaultListModel<String> getNicksContactos() {
         return this.nicksContactos;
     }
-    public DefaultListModel<String> getNicksChats(){
+
+    public DefaultListModel<String> getNicksChats() {
         return this.nicksChats;
     }
-    public void setControlador(Controlador controlador){
+
+    public void setControlador(Controlador controlador) {
         this.controlador = controlador;
     }
 
-    public void ingresar(String nickUsuario, int puertoUsuario){
+    public void ingresar(String nickUsuario, int puertoUsuario) {
         setNickUsuario(nickUsuario);
         setPuertoUsuario(puertoUsuario);
-        String aux = nickUsuario + "#" + puertoUsuario; 
+        String aux = nickUsuario + "#" + puertoUsuario;
         gestionConexion = new GestorConexion(this, this.controlador, aux);
         gestionConexion.start();
     }
 
-
-    public void agregarContacto(String nickContacto){
+    public void agregarContacto(String nickContacto) {
         gestionConexion.enviaRequest(nickContacto, 2);
     }
 
-    public void nuevoContacto(String nickname){ //Crea el contacto
-       
+    public void nuevoContacto(String nickname) { //Crea el contacto
+
         Contacto contacto = new Contacto(nickname);
         this.contactos.addElement(contacto);
         this.nicksContactos.addElement(contacto.getNickname());
     }
 
-    public Contacto buscaContactoPorNick(String nick){
+    public Contacto buscaContactoPorNick(String nick) {
         //busca en la lista de contactos
         int i, n;
-        i=0;
+        i = 0;
         Contacto aux = null;
-        n=this.getContactos().size();
-        while (i<n && !this.getContactos().get(i).getNickname().equals(nick))
+        n = this.getContactos().size();
+        while (i < n && !this.getContactos().get(i).getNickname().equals(nick)) {
             i++;
-        if (i<n){//siempre deberia encontrarlo
-            aux = this.getContactos().get(i);
         }
-        else{
+        if (i < n) {//siempre deberia encontrarlo
+            aux = this.getContactos().get(i);
+        } else {
             System.out.println("el Contacto buscado por nick NO existe");
         }
         return aux;
     }
 
-    public void nuevoMensajeRecibido(String mensaje){
+    public void nuevoMensajeRecibido(String mensaje) {
         String[] mensajeFormateado = mensaje.split("#", 3);
         String nickEmisor = mensajeFormateado[0];
-        
-        
-        if (!esContactoExistente(nickEmisor)){
-            System.out.println("me llego un mensaje de una persona que no tengo agendada..." + nickEmisor );
+
+        if (!esContactoExistente(nickEmisor)) {
+            System.out.println("me llego un mensaje de una persona que no tengo agendada..." + nickEmisor);
             nuevoContacto(nickEmisor);
             System.out.println("ya agende a la persona = " + nickEmisor);
             //sistema.getNicksChats().addElement(nickEmisor);
         }
         // fijarse si ya tiene un chat con esa persona; sino agregar chat
         Contacto contacto = buscaContactoPorNick(nickEmisor);
-        if (contacto.getTieneChat() == false){
+        if (contacto.getTieneChat() == false) {
             contacto.setTieneChat(true);
             getNicksChats().addElement(contacto.getNickname());
         }
 
         // agregar el mensaje al arraylist de mensajes del contacto    
-        contacto.getMensajes().add(mensaje);  
+        contacto.getMensajes().add(mensaje);
         System.out.println("ya agregue el mensaje a la lista de mensajes de ese contacto");
-        
+
         // lo muestra   
         controlador.nuevoMensajeRecibido(mensaje, contacto);
 
     }
 
-    public void enviarMensaje(String nickUsuario, String nicknameReceptor, String mensaje){
-        
+    public void enviarMensaje(String nickUsuario, String nicknameReceptor, String mensaje) {
+
         mensaje = creaStringMensaje(mensaje, nickUsuario);
         Contacto contacto = buscaContactoPorNick(nicknameReceptor);
         contacto.getMensajes().add(mensaje);
@@ -166,72 +172,74 @@ public class Sistema {
         controlador.cargaChat(contacto);
     }
 
-    public String creaStringMensaje(String texto, String nicknameUsuario){
-        String mensaje,hora = LocalDateTime.now().toString();
+    public String creaStringMensaje(String texto, String nicknameUsuario) {
+        String mensaje, hora = LocalDateTime.now().toString();
         mensaje = nicknameUsuario + "#" + hora + "#" + texto;
         return mensaje;
     }
 
-    public boolean esContactoExistente(String nickname){
-       Boolean aux=false;
-       Contacto contacto = buscaContactoPorNick(nickname);
-        if (contacto!=null)
-            aux=true; 
+    public boolean esContactoExistente(String nickname) {
+        Boolean aux = false;
+        Contacto contacto = buscaContactoPorNick(nickname);
+        if (contacto != null) {
+            aux = true;
+        }
         return aux;
     }
 
-   
-    public int buscaPosListaChats(String nickname){
+    public int buscaPosListaChats(String nickname) {
         int i = this.nicksChats.indexOf(nickname);
         return i;
     }
 
-    public void poneNotificacion(String nickname){
+    public void poneNotificacion(String nickname) {
         int i = this.nicksChats.indexOf(nickname);
-        if (!nicksChats.getElementAt(i).endsWith("[!!!]"))
+        if (!nicksChats.getElementAt(i).endsWith("[!!!]")) {
             nicksChats.set(i, nicksChats.get(i) + "[!!!]");
+        }
         //buscamos la posicion donde se encuentra nickname
         //copiamos ese string: nickname + [!!!]
         //guardamos ese string en la misma posicion que se encontraba el original
         //String string = buscaPosListaChats(nickname).append()
     }
 
-    public void sacaNotificacion(String nickname){
+    public void sacaNotificacion(String nickname) {
         int i = this.nicksChats.indexOf(nickname);
         String nick = nicksChats.get(i);
         //nicksChats.set(i, nicksChats.get(i) + "[!!!]");
-        if (nick.endsWith("[!!!]"))
+        if (nick.endsWith("[!!!]")) {
             nicksChats.set(i, nick.substring(0, nick.length() - 5));
+        }
     }
 
-    public void leer(String modo){
+    public void leer(String modo) {
         //persistencia : 
         //clave:  
         //busco en el archivo de config el metodo de persistencia y la clave de encriptacion
         //nombreUsuario +.extension
         String nombreArchivo;
+        switch (modo) {
+            case "XML":
+                nombreArchivo = getNickUsuario() + ".xml";
+                break;
+            case "JSON":
+                nombreArchivo = getNickUsuario() + ".json";
+                break;
+            case "Texto":
+                nombreArchivo = getNickUsuario() + ".txt";
+                System.out.println("Estoy buscando el archivo de texto: " + nombreArchivo);
+                break;
+
+            default:
+                //no hay modo de persistencia seleccionado, llamamos a la ventana;
+                //controlador.abreVentanaPersistencia();
+                modo = controlador.getVistaPersistencia().getModoSeleccionado();
+        }
+        IFactoryPersistencia factory;
+        ILector lector;
+        try {
             switch (modo) {
-                case "XML" :
-                    nombreArchivo = getNickUsuario() + ".xml";
-                    break;
-                case "JSON":
-                    nombreArchivo = getNickUsuario() + ".json";
-                break;
-                case "Texto":
-                    nombreArchivo = getNickUsuario() + ".txt";
-                    System.out.println("Estoy buscando el archivo de texto: " + nombreArchivo);
-                break;
-                    
-                default:
-                    //no hay modo de persistencia seleccionado, llamamos a la ventana;
-                    //controlador.abreVentanaPersistencia();
-                    modo = controlador.getVistaPersistencia().getModoSeleccionado();
-            }
-            IFactoryPersistencia factory;
-            ILector lector;
-            try{
-             switch (modo) {
-                case "XML" :
+                case "XML":
                     factory = new FactoryXml();
                     lector = factory.creaLector(contactos);
                     this.contactos = lector.cargarContactos(nickUsuario);
@@ -254,33 +262,33 @@ public class Sistema {
                     this.nicksContactos = lector.cargarNicksContactos(contactos);
                     this.nicksChats = lector.cargarNicksChats(contactos);
                     break;
-                    
+
                 default:
                     //no hay modo de persistencia seleccionado, llamamos a la ventana;
                     //controlador.abreVentanaPersistencia();
                     modo = controlador.getVistaPersistencia().getModoSeleccionado();
-                }
-                
-                controlador.recargaVista();
-                
-                System.out.println("Los contactos son: "+ this.contactos);
-                System.out.println("el nickname del primer contactos es :"+this.contactos.get(0).getNickname());
-                System.out.println("Los nicks que tieen que aparecer en chats son:" + this.nicksChats);
-                System.out.println("Los nicks que tienen que aparecer en lista contactos son: " +this.nicksContactos);
-
             }
-        catch(IOException e){
+
+            controlador.recargaVista();
+
+            System.out.println("Los contactos son: " + this.contactos);
+            // System.out.println("el nickname del primer contactos es :"+this.contactos.get(0).getNickname());
+            System.out.println("Los nicks que tieen que aparecer en chats son:" + this.nicksChats);
+            System.out.println("Los nicks que tienen que aparecer en lista contactos son: " + this.nicksContactos);
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-   // vamos a ver si el usuario tiene o no un modo de persistencia basado en si tiene o no el archivo de configuracion
-    public void creaArchConfig(String modo){
+    // vamos a ver si el usuario tiene o no un modo de persistencia basado en si tiene o no el archivo de configuracion
+
+    public void creaArchConfig(String modo) {
         this.modoPersistencia = modo;
         // 
         String clave = "1234567890abcdef"; // clave por defecto de 16 caracteres o mas
         this.gestionConexion.setClave(clave);
-        String nombreArchivo = "config" + nickUsuario + ".txt";    
-         try {
+        String nombreArchivo = "config" + nickUsuario + ".txt";
+        try {
             File archivo = new File(nombreArchivo);
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
                 writer.write("Persistencia: " + modo + "\n");
@@ -288,13 +296,13 @@ public class Sistema {
             }
         } catch (IOException e) {
             e.printStackTrace();
-         }        
+        }
     }
- 
-    public void leeArchConfig(){
+
+    public void leeArchConfig() {
         String modo = null;
         String clave = null;
-        String nombreArchivo = "config" + nickUsuario + ".txt";    
+        String nombreArchivo = "config" + nickUsuario + ".txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
@@ -319,34 +327,32 @@ public class Sistema {
         }
     }
 
-    public boolean existeArchConfig(){
+    public boolean existeArchConfig() {
         String nombreArchivo = "config" + nickUsuario + ".txt";
         File archivo = new File(nombreArchivo); // esto NO esta creando el archivo, solo chequea si existe
         return archivo.exists();
     }
 
-    public void guardarDatos(){
+    public void guardarDatos() {
         String modo = this.modoPersistencia;
         IFactoryPersistencia factory;
         IGuardador guardador;
         switch (modo) {
-            case "XML" :
+            case "XML":
                 factory = new FactoryXml();
                 guardador = factory.creaGuardador(contactos);
-                try{
+                try {
                     guardador.guardar(contactos, nickUsuario);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
             case "JSON":
                 factory = new FactoryJson();
                 guardador = factory.creaGuardador(contactos);
-                try{
+                try {
                     guardador.guardar(contactos, nickUsuario);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
@@ -362,9 +368,6 @@ public class Sistema {
             default:
                 System.out.println("No se ha seleccionado un modo de persistencia válido.");
         }
-        
+
     }
 }
-    
-    
-   

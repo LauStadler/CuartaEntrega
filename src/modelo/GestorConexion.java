@@ -17,8 +17,9 @@ import java.util.Arrays;
  * @author Usuario
  */
 public class GestorConexion extends Thread {
+
     private String ipServer;
-    private int[] puertoServer = {1001,1002};
+    private int[] puertoServer = {1001, 1002};
     private PrintWriter out;
     private Controlador controlador;
     private Sistema sistema;
@@ -45,16 +46,16 @@ public class GestorConexion extends Thread {
 
             int i = 0, n = this.puertoServer.length;
             try {
-                System.out.println("lista de puertos "+ Arrays.toString(puertoServer));
+                System.out.println("lista de puertos " + Arrays.toString(puertoServer));
                 while ((socket == null || !socket.isConnected()) && i < n) {
                     try {
                         socket = new Socket(ipServer, puertoServer[i]);
-                        System.out.println("puerto "+puertoServer[i]);
+                        System.out.println("puerto " + puertoServer[i]);
                     } catch (Exception e) {
-                        System.out.println("no se puedo conectar al puerto "+puertoServer[i]);
-                         i++;
+                        System.out.println("no se puedo conectar al puerto " + puertoServer[i]);
+                        i++;
                     }
-                } 
+                }
 
                 System.out.println("Se conecto al servidor " + socket.getPort());
                 this.out = new PrintWriter(socket.getOutputStream(), true);
@@ -63,7 +64,7 @@ public class GestorConexion extends Thread {
                 out.println(this.user);
 
                 while (socket.isConnected()) {
-                    System.out.println("Ya cree el socket estoy en while socket is connected");
+                    System.out.println("Estoy en while socket is connected");
                     String mensaje = in.readLine();
                     System.out.println("pase el readline");
                     procesaRequest(mensaje);
@@ -78,7 +79,8 @@ public class GestorConexion extends Thread {
 
             } catch (Exception e) {
                 System.out.println("Error en la conexión: " + e.getMessage());
-                //controlador.getVista().muestraVentanaEmergente("El servidor se cayó. Reintentando conexión...");
+                // controlador.getVista().muestraVentanaEmergente("El servidor se cayó.
+                // Reintentando conexión...");
                 try {
                     out.close();
                     in.close();
@@ -95,32 +97,33 @@ public class GestorConexion extends Thread {
         }
     }
 
-    public void setClave(String clave){
+    public void setClave(String clave) {
         this.cifrador.setClave(clave);
     }
 
     public void enviaRequest(String mensaje, int nrorequest) {// yo me quiero comunicar con el servidor
         String request = String.valueOf(nrorequest) + "#" + mensaje;
         out.println(request);
-
+        //nrorequest#receptor#mensajecifrado
     }
 
-    public void enviaMensaje(String receptor, String mensaje){
+    public void enviaMensaje(String receptor, String mensaje) {
         String mensajeCifrado = this.cifrador.cifrar(mensaje);
-        System.out.println("El mensaje que voy a mandar es "+ mensaje + " y cifrado es "+ mensajeCifrado);
-        this.enviaRequest(receptor + "#"+ mensajeCifrado, 1);
+        System.out.println("El mensaje que voy a mandar es " + mensaje + " y cifrado es " + mensajeCifrado);
+        String mensajeAEnviar = receptor + "#" + mensajeCifrado;
+        this.enviaRequest(mensajeAEnviar, 1);
     }
 
     public void procesaRequest(String request) { // cuando recibe comunicación del servidor
 
-        String aux[] = request.split("#", 2); // 1#emisor#hora#texto ==  1 - emisor#hora#texto
+        String aux[] = request.split("#", 2); // 1#emisor#hora#texto == 1 - emisor#hora#texto
         int nroRequest = Integer.parseInt(aux[0]);
         String mensaje;
 
         if (nroRequest == 1) {// 1--recibe mensaje
             System.out.println("Me llego un mensaje cifrado" + aux[1]);
             mensaje = cifrador.descifrar(aux[1]);
-            System.out.println("El mensaje descifrado es "+ mensaje);
+            System.out.println("El mensaje descifrado es " + mensaje);
             sistema.nuevoMensajeRecibido(mensaje);
         } else if (nroRequest == 2) {
             String confirmacion = aux[1];
@@ -131,18 +134,15 @@ public class GestorConexion extends Thread {
             } else {
                 // va a ser el nick del usuario
                 mensaje = "Se agrego el contacto exitosamente: " + confirmacion;
-                sistema.nuevoContacto(confirmacion);    
+                sistema.nuevoContacto(confirmacion);
             }
             controlador.getVista().muestraVentanaEmergente(mensaje);
-        }
-        else if (nroRequest == 3){
+        } else if (nroRequest == 3) {
             System.out.println("entre en la confirmacion de login");
-            if (aux[1].equals("true")){
+            if (aux[1].equals("true")) {
                 System.out.println("Si me pude logguear");
                 controlador.cambiaAVentanaChats();
-            }
-                
-            else{
+            } else {
                 System.out.println("No me pude logguear");
                 controlador.getVista().muestraVentanaEmergente("Nombre usuario ya en uso");
             }
