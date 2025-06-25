@@ -3,7 +3,10 @@
  <object class="modelo.Contacto" id="Contacto0">
   <void property="mensajes">
    <void method="add">
-    <string>user1#2025-06-24T15:58:08.195824400#Como andas!!!</string>
+    <string>user1#2025-06-25T14:54:31.619298800#Hola user2</string>
+   </void>
+   <void method="add">
+    <string>user1#2025-06-25T15:16:10.844088800#va de nuevo</string>
    </void>
   </void>
   <void property="nickname">

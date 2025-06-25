@@ -54,16 +54,9 @@ public class Controlador implements ActionListener{
                 if (nickUsuario.equals("") || nickUsuario.equals(" nickname"))
                     vistaLogIn.muestraVentanaEmergente("Se debe ingresar un nombre de usuario");
                 else{
+                    
                     Sistema.getInstance().ingresar(nickUsuario, puertoUsuario);
-                    
-                    
-                    // abre la ventana de persistencia
-                    if (!Sistema.getInstance().existeArchConfig()){
-                        this.vistaPersistencia.setVisible(true);
-                    }else{    
-                        // si el usuario tiene archivo de configuracion
-                        Sistema.getInstance().leeArchConfig();  
-                    }
+
                     // llenar campo nickUsuario
                     vista.setNickUsuario(nickUsuario);
                     // llenar campo puertoUsuario
@@ -101,6 +94,9 @@ public class Controlador implements ActionListener{
             // crear archivo de persistencia
             Sistema.getInstance().creaArchConfig(modo);
         }       
+    }
+    public void muestraVistaPersistencia(){
+        this.vistaPersistencia.setVisible(true);
     }
     
     public void recargaVista(){

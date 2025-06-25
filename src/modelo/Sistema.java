@@ -106,6 +106,13 @@ public class Sistema {
         setPuertoUsuario(puertoUsuario);
         String aux = nickUsuario + "#" + puertoUsuario;
         gestionConexion = new GestorConexion(this, this.controlador, aux);
+         // abre la ventana de persistencia
+        if (!this.existeArchConfig()){
+            controlador.muestraVistaPersistencia();
+        }else{    
+            // si el usuario tiene archivo de configuracion
+            this.leeArchConfig();  
+        } 
         gestionConexion.start();
     }
 
