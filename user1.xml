@@ -3,14 +3,11 @@
  <object class="modelo.Contacto" id="Contacto0">
   <void property="mensajes">
    <void method="add">
-    <string>user1#2025-06-25T14:54:31.619298800#Hola user2</string>
-   </void>
-   <void method="add">
-    <string>user1#2025-06-25T15:16:10.844088800#va de nuevo</string>
+    <string>IWzCF5cY6I9AQv/MlawspgJIbkDRpuaBOza1cOkynd4Ua5HLgULL7nmQLrgunRCwPBjetGo+I7AMrUhV5dl7W9l5S2KCIHLjA0ivGd8DRlY=</string>
    </void>
   </void>
   <void property="nickname">
-   <string>user2</string>
+   <string>IWzCF5cY6I9AQv/MlawspgJIbkDRpuaBOza1cOkynd4Ua5HLgULL7nmQLrgunRCwPBjetGo+I7AMrUhV5dl7W9l5S2KCIHLjA0ivGd8DRlY=</string>
   </void>
   <void property="tieneChat">
    <boolean>true</boolean>
