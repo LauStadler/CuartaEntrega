@@ -107,10 +107,11 @@ public class GestorConexion extends Thread {
         //nrorequest#receptor#mensajecifrado
     }
 
-    public void enviaMensaje(String receptor, String mensaje) {
+    public void enviaMensaje(String receptor, String nickUsuario, String mensaje) {
+
         String mensajeCifrado = this.cifrador.cifrar(mensaje);
         System.out.println("El mensaje que voy a mandar es " + mensaje + " y cifrado es " + mensajeCifrado);
-        String mensajeAEnviar = receptor + "#" + mensajeCifrado;
+        String mensajeAEnviar = receptor + "#" + Sistema.getInstance().creaStringMensaje(mensajeCifrado, nickUsuario);
         this.enviaRequest(mensajeAEnviar, 1);
     }
 
@@ -122,9 +123,11 @@ public class GestorConexion extends Thread {
 
         if (nroRequest == 1) {// 1--recibe mensaje
             System.out.println("Me llego un mensaje cifrado" + aux[1]);
-            mensaje = cifrador.descifrar(aux[1]);
+            String aux2[] =  aux[1].split("#", 3);
+            mensaje = cifrador.descifrar(aux2[2]);
             System.out.println("El mensaje descifrado es " + mensaje);
-            sistema.nuevoMensajeRecibido(mensaje);
+            String mensajeCompleto = aux2[0] + aux2[1] + mensaje;
+            sistema.nuevoMensajeRecibido(mensajeCompleto);
         } else if (nroRequest == 2) {
             String confirmacion = aux[1];
 

@@ -172,10 +172,10 @@ public class Sistema {
 
     public void enviarMensaje(String nickUsuario, String nicknameReceptor, String mensaje) {
 
-        mensaje = creaStringMensaje(mensaje, nickUsuario);
+        String mensajeCompleto = creaStringMensaje(mensaje, nickUsuario);
         Contacto contacto = buscaContactoPorNick(nicknameReceptor);
-        contacto.getMensajes().add(mensaje);
-        gestionConexion.enviaMensaje(nicknameReceptor, mensaje);
+        contacto.getMensajes().add(mensajeCompleto);
+        gestionConexion.enviaMensaje(nicknameReceptor, nickUsuario, mensaje);
         controlador.cargaChat(contacto);
     }
 
