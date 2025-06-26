@@ -126,7 +126,7 @@ public class GestorConexion extends Thread {
             String aux2[] =  aux[1].split("#", 3);
             mensaje = cifrador.descifrar(aux2[2]);
             System.out.println("El mensaje descifrado es " + mensaje);
-            String mensajeCompleto = aux2[0] + aux2[1] + mensaje;
+            String mensajeCompleto = aux2[0]+ "#" + aux2[1] + "#" + mensaje;
             sistema.nuevoMensajeRecibido(mensajeCompleto);
         } else if (nroRequest == 2) {
             String confirmacion = aux[1];
