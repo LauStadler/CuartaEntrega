@@ -1,2 +1,0 @@
-Persistencia: XML
-Clave: abcdef1234567890
